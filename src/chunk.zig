@@ -36,4 +36,8 @@ pub const Chunk = struct {
         self.code = &[0]u8{};
         self.count = 0;
     }
+
+    pub fn get(self: *Chunk, offset: usize) u8 {
+        return self.code[offset];
+    }
 };
