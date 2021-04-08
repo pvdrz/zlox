@@ -13,4 +13,5 @@ pub fn main() anyerror!void {
     @import("debug.zig").disassembleChunk(&chunk, "test chunk");
 
     chunk.free();
+    try chunk.write(0);
 }

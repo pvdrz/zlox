@@ -11,7 +11,7 @@ pub fn disassembleChunk(chunk: *Chunk, name: []const u8) void {
 
     var offset: usize = 0;
 
-    while (offset < chunk.count) {
+    while (offset < chunk.count()) {
         offset = disassembleInstruction(chunk, offset);
     }
 }
