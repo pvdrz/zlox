@@ -1,13 +1,16 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 const ArrayList = std.ArrayList;
+const ValueArray = @import("common.zig").ValueArray;
 
 pub const Chunk = struct {
     code: ArrayList(u8),
+    constants: ValueArray,
 
-    pub fn new(allocator: *Allocator) Chunk {
+    pub fn init(allocator: *Allocator) Chunk {
         return Chunk{
             .code = ArrayList(u8).init(allocator),
+            .constants = ValueArray.init(allocator),
         };
     }
 

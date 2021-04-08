@@ -3,10 +3,9 @@ const std = @import("std");
 const Chunk = @import("chunk.zig").Chunk;
 
 pub fn main() anyerror!void {
-    std.log.info("All your codebase are belong to us.", .{});
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 
-    var chunk = Chunk.new(&gpa.allocator);
+    var chunk = Chunk.init(&gpa.allocator);
 
     try chunk.write(0);
 
