@@ -1,7 +1,15 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 const ArrayList = std.ArrayList;
-const ValueArray = @import("common.zig").ValueArray;
+
+const common = @import("common.zig");
+const ValueArray = common.ValueArray;
+const Value = common.Value;
+
+pub const OpCode = enum(u8) {
+    op_constant,
+    op_return,
+};
 
 pub const Chunk = struct {
     code: ArrayList(u8),
@@ -14,8 +22,16 @@ pub const Chunk = struct {
         };
     }
 
-    pub fn write(self: *Chunk, byte: u8) !void {
-        try self.code.append(byte);
+    pub fn write(self: *Chunk, bytes: anytype) !void {
+        const ty = @TypeOf(bytes);
+
+        switch (ty) {
+            u8 => try self.code.append(bytes),
+            OpCode => try self.code.append(@enumToInt(bytes)),
+            else => {
+                @compileError("Cannot write value of type '" ++ @typeName(ty) ++ "' in chunk.");
+            },
+        }
     }
 
     pub fn free(self: *Chunk) void {
@@ -28,5 +44,10 @@ pub const Chunk = struct {
 
     pub fn count(self: *Chunk) usize {
         return self.code.items.len;
+    }
+
+    pub fn addConstant(self: *Chunk, value: Value) !usize {
+        try self.constants.write(value);
+        return self.constants.count() - 1;
     }
 };

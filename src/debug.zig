@@ -1,10 +1,10 @@
 const std = @import("std");
-const Chunk = @import("chunk.zig").Chunk;
 const print = std.debug.print;
 
-const OpCode = enum(u8) {
-    op_return,
-};
+const Chunk = @import("chunk.zig").Chunk;
+const OpCode = @import("chunk.zig").OpCode;
+
+const Value = @import("common.zig").Value;
 
 pub fn disassembleChunk(chunk: *Chunk, name: []const u8) void {
     print("== {s} ==\n", .{name});
@@ -23,6 +23,7 @@ fn disassembleInstruction(chunk: *Chunk, offset: usize) usize {
 
     switch (byte) {
         @enumToInt(OpCode.op_return) => return simpleInstruction("OP_RETURN", offset),
+        @enumToInt(OpCode.op_constant) => return constantInstruction("OP_CONSTANT", chunk, offset),
         else => {
             print("Unknown opcode {}\n", .{byte});
             return offset + 1;
@@ -33,4 +34,16 @@ fn disassembleInstruction(chunk: *Chunk, offset: usize) usize {
 fn simpleInstruction(name: []const u8, offset: usize) usize {
     print("{s}\n", .{name});
     return offset + 1;
+}
+
+fn constantInstruction(name: []const u8, chunk: *Chunk, offset: usize) usize {
+    var constant: u8 = chunk.get(offset + 1);
+    print("{s} {} ", .{ name, constant });
+    printValue(chunk.constants.get(@intCast(usize, constant)));
+    print("\n", .{});
+    return offset + 2;
+}
+
+fn printValue(value: Value) void {
+    print("{d}", .{value});
 }
